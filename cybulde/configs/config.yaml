@@ -1,0 +1,2 @@
+defaults:
+  - dask_cluster: local_dask_cluster

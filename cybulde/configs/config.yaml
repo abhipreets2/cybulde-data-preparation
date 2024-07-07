@@ -1,2 +1,3 @@
 defaults:
-  - dask_cluster: local_dask_cluster
+  - config_schema
+  - dask_cluster: local_dask_cluster_schema

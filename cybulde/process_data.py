@@ -17,6 +17,14 @@ def process_data(config) -> None:
     print(config)
     cluster = instantiate(config.dask_cluster) 
     client = Client(cluster)
-    print(client)
+
+    try:
+        logger.info("reading dataset...")
+        dataset_reader_manager = instantiate(config.dataset_reader_manager)
+        print(dataset_reader_manager)
+    finally:
+        logger.info("closing dask client and cluster...")
+        client.close()
+        cluster.close()
 if __name__=="__main__":
     process_data()

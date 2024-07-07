@@ -1,3 +1,4 @@
 defaults:
   - config_schema
-  - dask_cluster: local_dask_cluster_schema
+  - dask_cluster: local_dask_cluster
+  - dataset_reader_manager: ghc_jigsaw_twitter

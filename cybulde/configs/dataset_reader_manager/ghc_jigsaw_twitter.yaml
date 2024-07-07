@@ -1,0 +1,2 @@
+defaults:
+  - dataset_reader_manager_schema

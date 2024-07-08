@@ -14,6 +14,14 @@ class DatasetReaderConfig:
     github_user_name: str = SI("${github_user_name}")
     version: str = SI("${version}")
 
+@dataclass
+class GHCReaderConfig(DatasetReaderConfig):
+    _target_: str = "cybulde.data_processing.dataset_readers.GHCReader"
+    dev_split_ratio: float = MISSING
+
+@dataclass
+class DatasetReaderManagerConfig:
+
 def setup_config() -> None:
     cs = ConfigStore.instance()
     cs.store(name="dataset_reader_manager_schema", node=DatasetReaderConfig, group="dataset_reader_manager")

@@ -26,5 +26,6 @@ def process_data(config) -> None:
         logger.info("closing dask client and cluster...")
         client.close()
         cluster.close()
+
 if __name__=="__main__":
     process_data()

@@ -24,6 +24,9 @@ dask-ml = "~=2023.3"
 bokeh = "~=3.1"
 fastapi = "~=0.104"
 uvicorn = {version = "~=0.24", extras=["standard"]}
+#handle dvc error by installing previous version of pygit2
+pygit2 = "1.14.1"
+
 
 # Tokenization
 tokenizers = "~=0.13"

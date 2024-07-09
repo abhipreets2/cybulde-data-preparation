@@ -3,6 +3,7 @@ import dask.dataframe as dd
 from typing import Optional
 from shutil import rmtree
 from cybulde.utils.utils import run_shell_command
+import psutil
 
 def get_cmd_to_get_raw_data(
     version: str,
@@ -55,3 +56,37 @@ def get_repo_address_with_access_token(
     access_token = access_secret_version(gcp_project_id, gcp_github_access_token_secret_id)
     repo_address = dvc_remote_repo.replace("https://", "")
     return f"https://{github_user_name}:{access_token}@{repo_address}"
+
+def get_nrof_partitions(
+    df_memory_usage: int,
+    nrof_workers: int,
+    available_memory: Optional[float],
+    min_partition_size: int,
+    aimed_nrof_partitions_per_worker: int,
+) -> int:
+    if available_memory is None:
+        available_memory = psutil.virtual_memory().available
+    else:
+        available_memory = available_memory * nrof_workers
+
+    if df_memory_usage <= min_partition_size:
+        return 1
+
+    if df_memory_usage / nrof_workers <= min_partition_size:
+        return round(df_memory_usage / min_partition_size)
+
+    nrof_partitions_per_worker = 0
+    required_memory = float("inf")
+
+    while required_memory > available_memory:
+        nrof_partitions_per_worker += 1
+        required_memory = df_memory_usage / nrof_partitions_per_worker
+
+    nrof_partitions = nrof_partitions_per_worker * nrof_workers
+
+    while (df_memory_usage / (nrof_partitions + 1)) > min_partition_size and (
+        nrof_partitions // nrof_workers
+    ) < aimed_nrof_partitions_per_worker:
+        nrof_partitions += 1
+
+    return nrof_partitions

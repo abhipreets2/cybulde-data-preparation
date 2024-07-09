@@ -22,14 +22,14 @@ def process_data(config) -> None:
         logger.info("Fetching data...")
         get_raw_data_with_version(version=config.version, data_local_save_dir=config.data_local_save_dir, dvc_remote_repo=config.dvc_remote_repo, dvc_data_folder=config.dvc_data_folder, github_user_name=config.github_user_name, github_access_token=access_secret_version(config.infrastructure.project_id, config.github_access_token_secret_id))
         logger.info("Data stored in local.")
-    exit(0)
     cluster = instantiate(config.dask_cluster) 
     client = Client(cluster)
 
     try:
         logger.info("reading dataset...")
         dataset_reader_manager = instantiate(config.dataset_reader_manager)
-        print(dataset_reader_manager)
+        df = dataset_reader_manager.read_data(nrof_workers=config.dask_cluster.n_workers)
+        print(df.head())
     finally:
         logger.info("closing dask client and cluster...")
         client.close()

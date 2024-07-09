@@ -3,12 +3,21 @@ from pydantic.dataclasses import dataclass
 from omegaconf import MISSING
 from cybulde.config_schemas.dask_cluster import dask_cluster_schema
 from cybulde.config_schemas.data_processing import dataset_readers_schema
+from cybulde.config_schemas.infrastructure import gcp_schema
 
 @dataclass 
 class Config:
+    version: str = MISSING
+    fetch_data: bool = MISSING
+    data_local_save_dir: str = "./data/raw"
+    dvc_remote_repo: str = "https://github.com/abhipreets2/cybulde-data-versioning.git"
+    dvc_data_folder: str = "data/raw"
+    github_user_name: str = "abhipreets2"
+    github_access_token_secret_id: str = "github-access-token"
+    infrastructure: gcp_schema.GCPConfig = gcp_schema.GCPConfig()
     dask_cluster: dask_cluster_schema.DaskClusterConfig = MISSING
-    dataset_reader_manager: dataset_readers_schema.DatasetReaderConfig = MISSING
-
+    dataset_reader_manager: dataset_readers_schema.DatasetReaderManagerConfig = MISSING
+    
 def setup_config():
     dask_cluster_schema.setup_config()
     dataset_readers_schema.setup_config()

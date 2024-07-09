@@ -2,3 +2,5 @@ defaults:
   - config_schema
   - dask_cluster: local_dask_cluster
   - dataset_reader_manager: ghc_jigsaw_twitter
+version: v9
+fetch_data: true

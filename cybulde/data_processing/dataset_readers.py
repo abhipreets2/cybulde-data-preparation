@@ -1,6 +1,6 @@
 from abc import  ABC, abstractmethod
 from cybulde.utils.utils import get_logger
-from cybulde.utils.data_utils import get_repo_address_with_access_token
+from cybulde.utils.data_utils import get_repo_address_with_access_token, repartition_dataframe
 import dask.dataframe as dd
 from typing import Optional
 import os
@@ -125,3 +125,25 @@ class GHCDatasetReader(DatasetReader):
         train_df, dev_df = self.split_dataset(train_df, self.dev_split_ratio, stratify_column="label")
 
         return train_df, dev_df, test_df
+
+class DatasetReaderManager:
+    def __init__(
+            self,
+            dataset_readers: dict[str, DatasetReader],
+            repartition: bool = True,
+            available_memory: Optional[float] = None,
+            ) -> None:
+        self.dataset_readers = dataset_readers
+        self.repartition = repartition
+        self.available_memory = available_memory
+
+    def read_data(
+            self,
+            nrof_wokers: int
+            ) -> dd.core.DataFrame:
+        dfs = [dataset_reader.read_data() for dataset_reader in dataset_readers]
+        df = dd.concat(dfs)
+        if self.repartition:
+            df = repartition_dataframe(df, nrof_workers=nrof_workers, available_memory=self.available_memory)
+
+        return df

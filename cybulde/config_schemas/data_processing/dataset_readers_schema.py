@@ -1,4 +1,5 @@
 from typing import Optional
+from cybulde.utils.data_utils import get_repo_address_with_access_token
 from hydra.core.config_store import ConfigStore
 from omegaconf import MISSING, SI
 from pydantic.dataclasses import dataclass
@@ -16,12 +17,17 @@ class DatasetReaderConfig:
 
 @dataclass
 class GHCReaderConfig(DatasetReaderConfig):
-    _target_: str = "cybulde.data_processing.dataset_readers.GHCReader"
+    _target_: str = "cybulde.data_processing.dataset_readers.GHCDatasetReader"
     dev_split_ratio: float = MISSING
 
 @dataclass
 class DatasetReaderManagerConfig:
+    _target_: str = "cybulde.data_processing.dataset_readers.DatasetReaderManager" 
+    dataset_readers: dict[str, DatasetReaderConfig] = MISSING
+    repartition: bool = True
+    available_memory: Optional[float] = None
 
 def setup_config() -> None:
     cs = ConfigStore.instance()
-    cs.store(name="dataset_reader_manager_schema", node=DatasetReaderConfig, group="dataset_reader_manager")
+    cs.store(name="dataset_reader_manager_schema", node=DatasetReaderManagerConfig, group="dataset_reader_manager")
+    cs.store(name="ghc_dataset_reader_schema", node=GHCReaderConfig, group="dataset_reader_manager/dataset_reader")

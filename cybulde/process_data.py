@@ -30,6 +30,7 @@ def process_data(config) -> None:
         dataset_reader_manager = instantiate(config.dataset_reader_manager)
         df = dataset_reader_manager.read_data(nrof_workers=config.dask_cluster.n_workers)
         print(df.head())
+        print(df['dataset_name'].value_counts().compute())
     finally:
         logger.info("closing dask client and cluster...")
         client.close()

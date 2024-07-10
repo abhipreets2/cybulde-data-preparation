@@ -132,6 +132,100 @@ class GHCDatasetReader(DatasetReader):
 
         return train_df, dev_df, test_df
 
+
+class JigsawDatasetReader(DatasetReader):
+    def __init__(
+        self,
+        dataset_dir: str,
+        dataset_name: str,
+        dev_split_ratio: float,
+        gcp_project_id: str,
+        gcp_github_access_token_secret_id: str,
+        dvc_remote_repo: str,
+        github_user_name: str,
+        version: str,
+    ) -> None:
+        super().__init__(
+            dataset_dir,
+            dataset_name,
+            gcp_project_id,
+            gcp_github_access_token_secret_id,
+            dvc_remote_repo,
+            github_user_name,
+            version,
+        )
+        self.dev_split_ratio = dev_split_ratio
+        self.columns_for_label = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+
+    def _read_data(self) -> tuple[dd.core.DataFrame, dd.core.DataFrame, dd.core.DataFrame]:
+        test_csv_path = os.path.join(self.dataset_dir, "test.csv")
+        test_csv_url = self.get_remote_url(test_csv_path)
+        test_df = dd.read_csv(test_csv_url)
+
+        test_labels_csv_path = os.path.join(self.dataset_dir, "test_labels.csv")
+        test_labels_csv_url = self.get_remote_url(test_labels_csv_path)
+        test_labels_df = dd.read_csv(test_labels_csv_url)
+
+        test_df = test_df.merge(test_labels_df, on=["id"])
+        test_df = test_df[test_df["toxic"] != -1]
+
+        test_df = self.get_text_and_label_columns(test_df)
+        to_train_df, test_df = self.split_dataset(test_df, 0.1, stratify_column="label")
+
+        train_csv_path = os.path.join(self.dataset_dir, "train.csv")
+        train_csv_url = self.get_remote_url(train_csv_path)
+        train_df = dd.read_csv(train_csv_url)
+        train_df = self.get_text_and_label_columns(train_df)
+        train_df = dd.concat([train_df, to_train_df])  # type: ignore
+
+        train_df, dev_df = self.split_dataset(train_df, self.dev_split_ratio, stratify_column="label")
+
+        return train_df, dev_df, test_df
+
+    def get_text_and_label_columns(self, df: dd.core.DataFrame) -> dd.core.DataFrame:
+        df["label"] = (df[self.columns_for_label].sum(axis=1) > 0).astype(int)
+        df = df.rename(columns={"comment_text": "text"})
+        return df
+
+
+class TwitterDatasetReader(DatasetReader):
+    def __init__(
+        self,
+        dataset_dir: str,
+        dataset_name: str,
+        dev_split_ratio: float,
+        test_split_ratio: float,
+        gcp_project_id: str,
+        gcp_github_access_token_secret_id: str,
+        dvc_remote_repo: str,
+        github_user_name: str,
+        version: str,
+    ) -> None:
+        super().__init__(
+            dataset_dir,
+            dataset_name,
+            gcp_project_id,
+            gcp_github_access_token_secret_id,
+            dvc_remote_repo,
+            github_user_name,
+            version,
+        )
+        self.dev_split_ratio = dev_split_ratio
+        self.test_split_ratio = test_split_ratio
+
+    def _read_data(self) -> tuple[dd.core.DataFrame, dd.core.DataFrame, dd.core.DataFrame]:
+        train_csv_path = os.path.join(self.dataset_dir, "cyberbullying_tweets.csv")
+        train_csv_url = self.get_remote_url(train_csv_path)
+        df = dd.read_csv(train_csv_url)
+        df = df.rename(columns={"tweet_text": "text", "cyberbullying_type": "label"})
+        df["label"] = (df["label"] != "not_cyberbullying").astype(int)
+
+        train_df, test_df = self.split_dataset(df, self.test_split_ratio, stratify_column="label")
+        train_df, dev_df = self.split_dataset(train_df, self.dev_split_ratio, stratify_column="label")
+
+        return train_df, dev_df, test_df
+
+
 class DatasetReaderManager:
     def __init__(
             self,

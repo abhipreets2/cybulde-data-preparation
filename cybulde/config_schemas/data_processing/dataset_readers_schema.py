@@ -21,6 +21,18 @@ class GHCReaderConfig(DatasetReaderConfig):
     dev_split_ratio: float = MISSING
 
 @dataclass
+class JigsawReaderConfig(DatasetReaderConfig):
+    _target_: str = "cybulde.data_processing.dataset_readers.JigsawDatasetReader"
+    dev_split_ratio: float = MISSING
+
+@dataclass
+class TwitterReaderConfig(DatasetReaderConfig):
+    _target_: str = "cybulde.data_processing.dataset_readers.TwitterDatasetReader"
+    dev_split_ratio: float = MISSING
+    test_split_ratio: float = MISSING
+
+
+@dataclass
 class DatasetReaderManagerConfig:
     _target_: str = "cybulde.data_processing.dataset_readers.DatasetReaderManager" 
     dataset_readers: dict[str, DatasetReaderConfig] = MISSING
@@ -31,3 +43,5 @@ def setup_config() -> None:
     cs = ConfigStore.instance()
     cs.store(name="dataset_reader_manager_schema", node=DatasetReaderManagerConfig, group="dataset_reader_manager")
     cs.store(name="ghc_dataset_reader_schema", node=GHCReaderConfig, group="dataset_reader_manager/dataset_reader")
+    cs.store(name="jigsaw_dataset_reader_schema", node=JigsawReaderConfig, group="dataset_reader_manager/dataset_reader")
+    cs.store(name="twitter_dataset_reader_schema", node=TwitterReaderConfig, group="dataset_reader_manager/dataset_reader")

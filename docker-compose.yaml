@@ -13,5 +13,6 @@ services:
         USER_NAME: "${USER_NAME:-abhipreet}"
         USER_ID : "${USER_ID:-1000}"
     volumes:
-      - ./:/app/
+      # mount to test locally, else we copy this folder in the Dockerfile
+      #- ./:/app/
       - /home/abhipreet/.config/gcloud:/home/${USER_NAME:-abhipreet}/.config/gcloud

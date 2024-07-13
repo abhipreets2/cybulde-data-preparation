@@ -1,0 +1,11 @@
+defaults:
+  - gcp_dask_cluster_schema
+
+machine_type: n2-standard-2
+docker_image: asia-south1-docker.pkg.dev/cybulde-427611/cybulde-images/cybulde-data-processing:1
+docker_args: >
+  --log-driver=gcplogs
+n_workers: 3
+worker_options:
+  nthreads: 1
+preemptible: false

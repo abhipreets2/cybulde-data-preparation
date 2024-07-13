@@ -13,7 +13,7 @@ from cybulde.utils.data_utils import get_raw_data_with_version
 from cybulde.utils.gcp_utils import access_secret_version
 import dask.dataframe as dd
 from cybulde.data_processing.dataset_cleaner import DatasetCleanerManager
-
+from cybulde.utils.config_utils import custom_instantiate
 
 def process_raw_data(
         df_partition: dd.core.DataFrame,
@@ -27,12 +27,12 @@ def process_data(config) -> None:
     os.environ["HYDRA_FULL_ERROR"] = "1"
     logger = get_logger(Path(__file__).name)
     logger.info("Processing raw data...")
-    print(OmegaConf.to_yaml(config))
+    print(OmegaConf.to_yaml(config, resolve=True))
     if (config.fetch_data):
         logger.info("Fetching data...")
         get_raw_data_with_version(version=config.version, data_local_save_dir=config.data_local_save_dir, dvc_remote_repo=config.dvc_remote_repo, dvc_data_folder=config.dvc_data_folder, github_user_name=config.github_user_name, github_access_token=access_secret_version(config.infrastructure.project_id, config.github_access_token_secret_id))
         logger.info("Data stored in local.")
-    cluster = instantiate(config.dask_cluster) 
+    cluster =custom_instantiate(config.dask_cluster) 
     client = Client(cluster)
 
     try:

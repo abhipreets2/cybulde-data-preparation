@@ -62,7 +62,6 @@ class GCPDaskClusterConfig(DaskClusterConfig):
     preemptible: Optional[bool] = False
     debug: Optional[bool] = False
     instance_labels: Optional[dict[str, str]] = None
-    print("config setup")
 def setup_config() -> None:
     cs = ConfigStore.instance()
     cs.store(name="local_dask_cluster_schema", node=LocalDaskClusterConfig, group="dask_cluster")

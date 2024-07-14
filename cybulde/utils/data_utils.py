@@ -7,6 +7,10 @@ import psutil
 import pkg_resources
 import symspellpy
 from symspellpy import SymSpell
+import pandas as pd
+
+def filter_based_on_minimum_number_of_words(df: pd.DataFrame, min_nrof_words: int) -> pd.DataFrame:
+    return df[df["cleaned_text"].str.split().apply(len) >= min_nrof_words]
 
 
 def get_cmd_to_get_raw_data(

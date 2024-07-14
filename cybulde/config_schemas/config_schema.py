@@ -18,6 +18,8 @@ class Config:
     dask_cluster: dask_cluster_schema.DaskClusterConfig = MISSING
     dataset_reader_manager: dataset_readers_schema.DatasetReaderManagerConfig = MISSING
     dataset_cleaner_manager: dataset_cleaner_schema.DatasetCleanerManagerConfig = MISSING
+    processed_data_save_dir: str = MISSING
+    min_nrof_words: int = 2
 
 def setup_config():
     dask_cluster_schema.setup_config()

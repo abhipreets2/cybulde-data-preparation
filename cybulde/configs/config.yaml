@@ -7,4 +7,4 @@ defaults:
 
 version: v9
 fetch_data: false
-
+processed_data_save_dir: gs://cybulde-data-store/data/processed

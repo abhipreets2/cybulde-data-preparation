@@ -1,5 +1,3 @@
-# Cyberbullying Data Preparation And Tokenizer Training
-
 # (1) Data preparation
 
 ## Objectives
@@ -44,6 +42,10 @@ GCP uses the following resource in the project
 - All our workers and scheduler should be using the same setup in order to work together, for this we will use **Artifact Registry** to push docker image, this can be picked up by the compute engine for initial setup.
 - In order to view the dask daskboard and interaction between scheduler and worker we will need to setup some **Firewall rules**, these rules can be found in the network parameter of [dask documentation](https://cloudprovider.dask.org/en/latest/gcp.html)
 
+## System Design
+
+![image](https://github.com/user-attachments/assets/b2e55ba9-927d-4a49-8fb1-b276dacd061a)
+
 ## Python script
 - Create a schema in config_schemas for classes which require huge number parameters (makes it easier to track and maintain changes).
 - Generate config.yaml files to use and track config.
@@ -80,9 +82,7 @@ defaults:
 in this case there is nothing stored in the config store as "local_dask_cluster",
 but hydra will start looking for a folder within the main config folder called "dask_cluster" within which a "local_dask_cluster.yaml" should be present in order to be used.
 
-## Flow
 
-![[Pasted image 20240715155950.png]]
 Data storage:
 - This can be either a local implementation or cloud, in my case I have used GCP bucket to store the actual data. 
 - GIT does not store the actual data it is only used to track the version. DVC integration with GIT enables us to do this, different version of data will have different tags in the GIT repo.

@@ -1,3 +1,5 @@
+# Cyberbullying Data Preparation And Tokenizer Training
+
 # (1) Data preparation
 
 ## Objectives
@@ -95,9 +97,10 @@ Compute:
 
 ## Issues faced
 - Because of the recent pygit2 naming changes, dvc is not working as intended. To fix this downgrade the version of pygit. This issues is reported [here](https://github.com/iterative/dvc/issues/10431)
-- If you have been running docker with sudo until now as I did, it time to switch up. Trying `sudo docker push` looks for credentials in the /root/.docker instead of ~/.docker, as reported [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/Permission-quot-artifactregistry-repositories-uploadArtifacts/m-p/665497/highlight/true#M1638)
+- If you have been running docker with sudo until now as I did, it is time to switch up. Trying `sudo docker push` looks for credentials in the /root/.docker instead of ~/.docker, as reported [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/Permission-quot-artifactregistry-repositories-uploadArtifacts/m-p/665497/highlight/true#M1638)
 - If we have multiple gcloud auth accounts we can get the below error, if scope is not defined for one of the accounts; 
 	```google.auth.exceptions.RefreshError: ('invalid_scope: Invalid OAuth scope or ID token audience provided.', {'error': 'invalid_scope', 'error_description': 'Invalid OAuth scope or ID token audience provided.'})```
 	
 	To solve this I check the `gcloud auth list` and removed all the accounts using `gcloud revoke <account_name>` and then added the owner account back using `gcloud auth login` 
 - For some reason hydra does not instantiate `GCPCluster` in dask when we use `instantiate()` , to tackle this `custom_instantiate()` is added in  config_utils.py 
+

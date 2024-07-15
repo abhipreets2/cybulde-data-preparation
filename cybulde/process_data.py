@@ -15,6 +15,9 @@ import dask.dataframe as dd
 from cybulde.data_processing.dataset_cleaner import DatasetCleanerManager
 from cybulde.utils.config_utils import custom_instantiate
 
+if __name__=="__main__":
+    config_name = "data_processing_config"
+
 def process_raw_data(
         df_partition: dd.core.DataFrame,
         dataset_cleaner_manager: DatasetCleanerManager
@@ -22,7 +25,7 @@ def process_raw_data(
     return df_partition["text"].apply(dataset_cleaner_manager)
 
 
-@get_config(config_path="../configs", config_name="config")
+@get_config(config_path="../configs", config_name=config_name)
 def process_data(config) -> None:
     os.environ["HYDRA_FULL_ERROR"] = "1"
     logger = get_logger(Path(__file__).name)

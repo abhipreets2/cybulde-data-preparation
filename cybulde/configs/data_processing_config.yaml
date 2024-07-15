@@ -1,5 +1,5 @@
 defaults:
-  - config_schema
+  - data_processing_config_schema
   - dask_cluster: gcp_dask_cluster
   - dataset_reader_manager: ghc_jigsaw_twitter
   - dataset_cleaner_manager: dataset_cleaner

@@ -1,0 +1,2 @@
+defaults:
+  - tokenizer_training_config_schema

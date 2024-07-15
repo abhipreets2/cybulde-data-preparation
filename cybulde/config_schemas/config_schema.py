@@ -6,7 +6,7 @@ from cybulde.config_schemas.data_processing import dataset_readers_schema, datas
 from cybulde.config_schemas.infrastructure import gcp_schema
 
 @dataclass 
-class Config:
+class DataProcessingConfig:
     version: str = MISSING
     fetch_data: bool = MISSING
     data_local_save_dir: str = "./data/raw"
@@ -21,9 +21,16 @@ class Config:
     processed_data_save_dir: str = MISSING
     min_nrof_words: int = 2
 
+
+@dataclass 
+class TokenizerConfig:
+    
+
+
 def setup_config():
     dask_cluster_schema.setup_config()
     dataset_readers_schema.setup_config()
     dataset_cleaner_schema.setup_config()
     cs = ConfigStore.instance()
-    cs.store(name="config_schema", node=Config)
+    cs.store(name="data_processing_config_schema", node=DataProcessingConfig)
+    cs.store(name="tokenizer_training_config_schema", node=TokenizerConfig)

@@ -7,7 +7,6 @@
 - Process this data parallelly to be in a format to be picked up by the machine learning model.
 - Keep a track of required packages and containerizer code for reproducibility.
 
-
 ## How to use this repo
 
 ### Setting up the code
@@ -39,7 +38,7 @@ processed_data_save_dir: gs://cybulde-data-store/data/processed
 ### Setting up GCP
 GCP uses the following resource in the project
 - To store the data we will be needing a **Bucket**.
-- To store git tokens we are using **Secret Manager** which will be accessed by the VM to fetch the correct version of data.
+- To store git tokens we are using **Secret Manager** which will be accessed by the VM to fetch the correct version of data. GIT tokens are needed to get access to the .dvc folder which is being stored in github.
 - **Compute engine** will be responsible for reading and cleaning the data.(no setup needed for this as this will be created through dask)
 - All our workers and scheduler should be using the same setup in order to work together, for this we will use **Artifact Registry** to push docker image, this can be picked up by the compute engine for initial setup.
 - In order to view the dask daskboard and interaction between scheduler and worker we will need to setup some **Firewall rules**, these rules can be found in the network parameter of [dask documentation](https://cloudprovider.dask.org/en/latest/gcp.html)
@@ -47,6 +46,15 @@ GCP uses the following resource in the project
 ## System Design
 
 ![image](https://github.com/user-attachments/assets/b2e55ba9-927d-4a49-8fb1-b276dacd061a)
+
+Data storage:
+- This can be either a local implementation or cloud, in my case I have used GCP bucket to store the actual data. 
+- GIT does not store the actual data it is only used to track the version. DVC integration with GIT enables us to do this, different version of data will have different tags in the GIT repo.
+- GCP bucket is where we store the raw and cleaned data.
+
+Compute:
+- We are using the concept of distributed data processing to process our data, the scheduler will create multiple workers which will be doing the data cleaning task and reporting back to the scheduler.
+- The compute will read the data and apply transformations on it to make the data clean. Finally the cleaned and labelled data will be stored in GCP bucket from where it can be picked up by the machine learning model.
 
 ## Python script
 - Create a schema in config_schemas for classes which require huge number parameters (makes it easier to track and maintain changes).
@@ -66,7 +74,7 @@ The docker container should be able to:
 - In order to use hydra we have to make use of `@hydra.main(config_path=<config_path>, config_name=<config_name>, version_base=None)` decorator, this decorator will return a DictConfig object that can be used by the base function
 - We supply the config.yaml file to the above decorator, the config.yaml file will contain the schema, the schema the class which needs to be instantiate using `_target_` and other parameters
 - We can override the default parameters in the schema by mentioning it in the config.yaml file
-- We also have to dump individual configs in the ConfigStore so we can use them in our final config (hence we have a wrapper on top of `@hydra.main()` called get_config or something similar)
+- We also have to dump individual configs in the ConfigStore so we can use them in our final config (hence we have a wrapper on top of `@hydra.main()` called get_config or something similar).
 
 ## Configs
 - n_workers in local_dask_cluster.yaml overriden to **12** (6x2), because my system has 6 cores each with 2 threads
@@ -84,20 +92,9 @@ defaults:
 in this case there is nothing stored in the config store as "local_dask_cluster",
 but hydra will start looking for a folder within the main config folder called "dask_cluster" within which a "local_dask_cluster.yaml" should be present in order to be used.
 
-
-Data storage:
-- This can be either a local implementation or cloud, in my case I have used GCP bucket to store the actual data. 
-- GIT does not store the actual data it is only used to track the version. DVC integration with GIT enables us to do this, different version of data will have different tags in the GIT repo.
-- GCP bucket is where we store the raw and cleaned data.
-
-Compute:
-- We are using the concept of distributed data processing to process our data, the scheduler will create multiple workers which will be doing the data cleaning task and reporting back to the scheduler.
-- The compute will read the data and apply transformations on it to make the data clean. Finally the cleaned and labelled data will be stored in GCP bucket from where it can be picked up by the machine learning model.
-
-
 ## Issues faced
 - Because of the recent pygit2 naming changes, dvc is not working as intended. To fix this downgrade the version of pygit. This issues is reported [here](https://github.com/iterative/dvc/issues/10431)
-- If you have been running docker with sudo until now as I did, it is time to switch up. Using `sudo docker push` looks for credentials in the /root/.docker instead of ~/.docker, as reported [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/Permission-quot-artifactregistry-repositories-uploadArtifacts/m-p/665497/highlight/true#M1638)
+- If you have been running docker with sudo until now as I did, it is time to switch up. Using `sudo docker` looks for credentials in the /root/.docker instead of ~/.docker, as reported [here](https://www.googlecloudcommunity.com/gc/Developer-Tools/Permission-quot-artifactregistry-repositories-uploadArtifacts/m-p/665497/highlight/true#M1638)
 - If we have multiple gcloud auth accounts we can get the below error, if scope is not defined for one of the accounts; 
 	```google.auth.exceptions.RefreshError: ('invalid_scope: Invalid OAuth scope or ID token audience provided.', {'error': 'invalid_scope', 'error_description': 'Invalid OAuth scope or ID token audience provided.'})```
 	

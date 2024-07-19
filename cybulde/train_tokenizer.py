@@ -15,21 +15,12 @@ import dask.dataframe as dd
 from cybulde.data_processing.dataset_cleaner import DatasetCleanerManager
 from cybulde.utils.config_utils import custom_instantiate
 
-
-def process_raw_data(
-        df_partition: dd.core.DataFrame,
-        dataset_cleaner_manager: DatasetCleanerManager
-        ) -> dd.core.Series:
-    return df_partition["text"].apply(dataset_cleaner_manager)
-
-
-@get_config(config_path="../configs", config_name="data_processing_config")
-def process_data(config) -> None:
+@get_config(config_path="../configs", config_name="tokenizer_training_config")
+def train_tokenizer(config) -> None:
     os.environ["HYDRA_FULL_ERROR"] = "1"
     logger = get_logger(Path(__file__).name)
     logger.info("Processing raw data...")
     print(OmegaConf.to_yaml(config, resolve=True))
-    exit(0)
     processed_data_save_dir = config.processed_data_save_dir
     if (config.fetch_data):
         logger.info("Fetching data...")
@@ -76,4 +67,4 @@ def process_data(config) -> None:
         cluster.close()
 
 if __name__=="__main__":
-    process_data()
+    train_tokenizer()

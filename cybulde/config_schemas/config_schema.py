@@ -4,6 +4,7 @@ from omegaconf import MISSING
 from cybulde.config_schemas.dask_cluster import dask_cluster_schema
 from cybulde.config_schemas.data_processing import dataset_readers_schema, dataset_cleaner_schema
 from cybulde.config_schemas.infrastructure import gcp_schema
+from cybulde.config_schemas.tokenization.tokenizer_schema import TokenizerConfig
 
 @dataclass 
 class DataProcessingConfig:
@@ -24,7 +25,10 @@ class DataProcessingConfig:
 
 @dataclass 
 class TokenizerConfig:
-    
+    infrastructure: gcp_schema.GCPConfig = gcp_schema.GCPConfig()
+    data_parquet_path: str = MISSING
+    text_column_name: str = MISSING
+    tokenizer: tokenizer_schema.TokenizerConfig = MISSING
 
 
 def setup_config():

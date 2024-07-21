@@ -1,0 +1,3 @@
+defaults:
+  - hugging_face_tokenizer_schema
+  - pre_tokenizer: whitespace_pre_tokenizer_schema

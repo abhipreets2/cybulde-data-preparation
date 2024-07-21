@@ -152,7 +152,7 @@ defaults:
 ![image](https://github.com/user-attachments/assets/1d2b48a3-e592-4a42-a130-24f1e9698c8c)
 
 Data storage:
-- We already have processed and split data stored in GCP bucket, from the (1) Data preparation.
+- We already have processed and split data stored in GCP bucket, from (1) Data preparation.
 - Using the processed data we will train our tokenizer and store the trained tokenizer back to GCP bucket in a different folder.
 
 Compute:
@@ -176,3 +176,4 @@ Compute:
 - [Kıvanç Yüksel](https://www.youtube.com/@emkademy)
 - [HuggingFace](https://huggingface.co/)
 - [Machine Learning Mastery](https://machinelearningmastery.com)
+

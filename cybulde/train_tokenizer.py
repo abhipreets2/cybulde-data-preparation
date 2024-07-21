@@ -1,26 +1,36 @@
 import os
 from pathlib import Path
-import dask.dataframe as dd
-from dask.distributed import Client
-from dask.distributed import LocalCluster
 from hydra.utils import instantiate
 import hydra
-from cybulde.config_schemas.dask_cluster.dask_cluster_schema import setup_config
 from cybulde.utils.utils import get_logger
 from cybulde.utils.config_utils import get_config
 from omegaconf import OmegaConf
-from cybulde.utils.data_utils import get_raw_data_with_version, filter_based_on_minimum_number_of_words
-from cybulde.utils.gcp_utils import access_secret_version
-import dask.dataframe as dd
-from cybulde.data_processing.dataset_cleaner import DatasetCleanerManager
-from cybulde.utils.config_utils import custom_instantiate
+import pandas as pd
 
 @get_config(config_path="../configs", config_name="tokenizer_training_config")
 def train_tokenizer(config) -> None:
     os.environ["HYDRA_FULL_ERROR"] = "1"
     logger = get_logger(Path(__file__).name)
     print(OmegaConf.to_yaml(config, resolve=True))
-    exit(0)
+    data_parquet_path = config.data_parquet_path
+    text_column_name = config.text_column_name
+    trained_tokenizer_path = config.trained_tokenizer_path
+
+    tokenizer = instantiate(config.tokenizer, _convert_="all")
+
+    logger.info("Reading dataset...")
+    df = pd.read_parquet(data_parquet_path)
+
+    logger.info("Starting training...")
+    tokenizer.train(df[text_column_name].values)
+
+    logger.info("Saving tokenizer...")
+
+    tokenizer_save_dir = os.path.join(trained_tokenizer_path, "trained_tokenizer")
+    tokenizer.save(tokenizer_save_dir)
+
+    logger.info("Saved tokenizer.")
+
 
 if __name__=="__main__":
     train_tokenizer()

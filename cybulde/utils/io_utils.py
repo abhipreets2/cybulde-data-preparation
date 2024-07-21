@@ -1,12 +1,17 @@
 import os
-from fsspec import AbstractFileSystem, file_system
+from fsspec import AbstractFileSystem, filesystem
+from typing import Any
 
 GCS_PREFIX = "gs://"
-GCS_FILE_SYSTEM_NAME = "gcs"
-LOCAL_FILE_SYSTEM_NAME = "file"
+GCS_file_system_NAME = "gcs"
+LOCAL_file_system_NAME = "file"
+
+def open_file(path: str, mode: str = "r") -> Any:
+    file_system = choose_file_system(path)
+    return file_system.open(path, mode)
 
 def choose_file_system(path: str) -> AbstractFileSystem:
-    return filesystem(GCS_FILE_SYSTEM_NAME) if path.startswith(GCS_PREFIX) else filesystem(LOCAL_FILE_SYSTEM_NAME)
+    return filesystem(GCS_file_system_NAME) if path.startswith(GCS_PREFIX) else filesystem(LOCAL_file_system_NAME)
 
 def is_dir(path: str) -> bool:
     file_system = choose_file_system(path)
@@ -30,7 +35,7 @@ def list_paths(path: str) -> list[str]:
     if not is_dir(path):
         return []
     paths: list[str] = file_system.ls(path)
-    if GCS_FILE_SYSTEM_NAME in file_system.protocol:
+    if GCS_file_system_NAME in file_system.protocol:
         gs_paths: list[str] = [f"{GCS_PREFIX}{path}" for path in paths]
         return gs_paths
     return paths

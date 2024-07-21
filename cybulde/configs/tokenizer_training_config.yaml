@@ -1,3 +1,8 @@
 defaults:
   - tokenizer_training_config_schema
   - tokenizer: bpe_tokenizer
+
+
+data_parquet_path: gs://cybulde-data-store/data/processed/train.parquet
+text_column_name: cleaned_text
+trained_tokenizer_path: gs://cybulde-data-store/

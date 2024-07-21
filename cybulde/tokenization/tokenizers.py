@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from tempfile import TemporaryDirectory
 
 from tokenizers.pre_tokenizers import PreTokenizer
 from tokenizers.models import Model
@@ -10,7 +11,7 @@ from tokenizers.processors import BertProcessing, ByteLevel, RobertaProcessing, 
 from tokenizers.trainers import BpeTrainer, UnigramTrainer, WordLevelTrainer, WordPieceTrainer
 from transformers import PreTrainedTokenizerFast
 
-from typing import Union
+from typing import Union, Optional
 from cybulde.utils.io_utils import copy_dir
 
 # Trainer can be one of the following type
@@ -61,21 +62,21 @@ class HuggingFaceTokenizer(TokenizerBase):
         if post_processor is not None:
             self.tokenizer.post_processor = post_processor
 
-        def train(self, texts: list[str]) -> None:
-            self.tokenizer.train_from_iterator(texts, trainer=self.trainer)
-            if self.pad_token is not None:
-                self.tokenizer.enable_padding(pad_id=self.tokenizer.token_to_id(self.pad_token), pad_token=self.pad_token)
+    def train(self, texts: list[str]) -> None:
+        self.tokenizer.train_from_iterator(texts, trainer=self.trainer)
+        if self.pad_token is not None:
+            self.tokenizer.enable_padding(pad_id=self.tokenizer.token_to_id(self.pad_token), pad_token=self.pad_token)
 
-        def save(self, tokenizer_save_dir: str) ->None:
-            tokenizer = PreTrainedTokenizerFast(
-                    tokenizer_object=self.tokenizer,
-                    unk_token=self.unk_token,
-                    sep_token=self.sep_token,
-                    pad_token=self.pad_token,
-                    mask_token=self.mask_token
-                    )
-            with TemporaryDirectory() as temp_dir_name:
-                temp_tokenizer_save_dir = os.path.join(temp_dir_name, "trained_tokenizer")
-                tokenizer.save_pretrained(temp_tokenizer_save_dir)
-                copy_dir(temp_tokenizer_save_dir, tokenizer_save_dir)
+    def save(self, tokenizer_save_dir: str) ->None:
+        tokenizer = PreTrainedTokenizerFast(
+                tokenizer_object=self.tokenizer,
+                unk_token=self.unk_token,
+                sep_token=self.sep_token,
+                pad_token=self.pad_token,
+                mask_token=self.mask_token
+                )
+        with TemporaryDirectory() as temp_dir_name:
+            temp_tokenizer_save_dir = os.path.join(temp_dir_name, "trained_tokenizer")
+            tokenizer.save_pretrained(temp_tokenizer_save_dir)
+            copy_dir(temp_tokenizer_save_dir, tokenizer_save_dir)
 

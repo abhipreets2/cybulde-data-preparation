@@ -26,8 +26,9 @@ class DataProcessingConfig:
 @dataclass 
 class TokenizerConfig:
     infrastructure: gcp_schema.GCPConfig = gcp_schema.GCPConfig()
-    #data_parquet_path: str = MISSING
-    #text_column_name: str = MISSING
+    data_parquet_path: str = MISSING
+    text_column_name: str = MISSING
+    trained_tokenizer_path: str = MISSING
     tokenizer: tokenizer_schema.TokenizerConfig = MISSING
 
 

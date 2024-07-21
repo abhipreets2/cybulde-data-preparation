@@ -3,3 +3,4 @@ defaults:
   - pre_tokenizer: whitespace_pre_tokenizer_schema
   - model: bpe_model_schema
   - trainer: bpe_trainer_schema
+  - normalizer: bert_normalizer_schema 

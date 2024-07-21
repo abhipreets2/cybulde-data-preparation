@@ -6,6 +6,8 @@ from pydantic.dataclasses import dataclass
 
 from cybulde.config_schemas.tokenization import pre_tokenizer_schema
 from cybulde.config_schemas.tokenization import model_schema
+from cybulde.config_schemas.tokenization import trainer_schema
+
 @dataclass
 class TokenizerConfig:
     _target_: str = MISSING
@@ -15,6 +17,7 @@ class HuggingFaceTokenizerConfig(TokenizerConfig):
     _target_: str = "cybulde.tokenization.tokenizers.HuggingFaceTokenizer"
     pre_tokenizer: pre_tokenizer_schema.PreTokenizerConfig = MISSING
     model: model_schema.ModelConfig = MISSING
+    trainer: trainer_schema.TrainerConfig = MISSING
 
     unk_token: Optional[str] = "[UNK]"
     cls_token: Optional[str] = "[CLS]"
@@ -26,7 +29,7 @@ class HuggingFaceTokenizerConfig(TokenizerConfig):
 def setup_config() -> None:
     pre_tokenizer_schema.setup_config()
     model_schema.setup_config()
-
+    trainer_schema.setup_config()
     cs = ConfigStore.instance()
     cs.store(
         group="tokenizer",

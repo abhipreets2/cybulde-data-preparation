@@ -29,7 +29,6 @@ def process_data(config) -> None:
     logger = get_logger(Path(__file__).name)
     logger.info("Processing raw data...")
     print(OmegaConf.to_yaml(config, resolve=True))
-    exit(0)
     processed_data_save_dir = config.processed_data_save_dir
     if (config.fetch_data):
         logger.info("Fetching data...")

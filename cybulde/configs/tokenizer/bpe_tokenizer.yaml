@@ -4,4 +4,5 @@ defaults:
   - model: bpe_model_schema
   - trainer: bpe_trainer_schema
   - normalizer: bert_normalizer_schema 
-  - decoder: bpe_decoder_schema 
+  - decoder: bpe_decoder_schema
+  - post_processor: byte_level_post_processing_schema 

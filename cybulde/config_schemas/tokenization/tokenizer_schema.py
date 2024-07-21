@@ -9,6 +9,7 @@ from cybulde.config_schemas.tokenization import model_schema
 from cybulde.config_schemas.tokenization import trainer_schema
 from cybulde.config_schemas.tokenization import normalizer_schema
 from cybulde.config_schemas.tokenization import decoder_schema
+from cybulde.config_schemas.tokenization import post_processor_schema
 
 @dataclass
 class TokenizerConfig:
@@ -22,6 +23,7 @@ class HuggingFaceTokenizerConfig(TokenizerConfig):
     trainer: trainer_schema.TrainerConfig = MISSING
     normalizer: Optional[normalizer_schema.NormalizerConfig] = None
     decoder: Optional[decoder_schema.DecoderConfig] = None
+    post_processor: Optional[post_processor_schema.PostProcessorConfig] = None
     
     unk_token: Optional[str] = "[UNK]"
     cls_token: Optional[str] = "[CLS]"
@@ -36,6 +38,7 @@ def setup_config() -> None:
     trainer_schema.setup_config()
     normalizer_schema.setup_config()
     decoder_schema.setup_config()
+    post_processor_schema.setup_config()
 
     cs = ConfigStore.instance()
     cs.store(
